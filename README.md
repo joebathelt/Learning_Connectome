@@ -20,6 +20,8 @@ input options:
 ## Included scripts
 - FA_Connectome: Python command line script that generates FA connectome matrices. In this matrix, the connection between two ROIs is expressed as the FA associated with streamlines that intersect with both ROIs.
 
+- Structural_connectome_analysis.ipynb: Jupyter Notebook with analyses of structural connectome data using graph theoretical methods. I recommend using an online notebook viewer, e.g. http://nbviewer.jupyter.org/
+
 ## Dependencies
 The scripts need a few neuroimaging packages to work:
 - FMRIB Software Library (FSL): http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/

@@ -456,7 +456,7 @@ def main():
         # Running the workflow
         fa_connectome.base_dir = os.path.abspath(out_directory)
         fa_connectome.write_graph()
-        fa_connectome.run()
+        fa_connectome.run(plugin='PBSGraph')
 
     os.chdir(out_directory)
     FA_connectome(subject_list, base_directory, out_directory, ROI_file)

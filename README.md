@@ -1,4 +1,4 @@
-# Structural covariance scripts
+# Association between structural connectome organisation and literacy and numeracy in children
 This repository contains the scripts to generate FA connectome files and analyse these with graph theory. The main command line script executes the connectome construction from diffusion-weighted images. The analysis of the resulting connectivity matrices is carried out in the Jupyter Notebook file.
 
 To generate FA connectome files:

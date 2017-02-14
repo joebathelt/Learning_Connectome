@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import optparse
 import os
+import re
 import sys
 
 from nipype.interfaces.base import BaseInterface
@@ -168,6 +169,11 @@ class FAconnectome(BaseInterface):
             streamlines=streamlines, label_volume=data, affine=streamlines_affine, symmetric=True, return_mapping=True, mapping_as_streamlines=True)
         matrix[matrix < 10] = 0
 
+        # Saving the density matrix
+        from nipype.utils.filemanip import split_filename
+        _, base, _ = split_filename(self.inputs.trackfile)
+        np.savetxt(base + '_streamline_count.txt', matrix, delimiter='\t')
+
         # Constructing the FA matrix
         dimensions = matrix.shape
         FA_matrix = np.empty(shape=dimensions)
@@ -184,8 +190,7 @@ class FAconnectome(BaseInterface):
         FA_matrix[np.tril_indices(n=len(FA_matrix))] = 0
         FA_matrix = FA_matrix.T + FA_matrix - np.diagonal(FA_matrix)
 
-        from nipype.utils.filemanip import split_filename
-        _, base, _ = split_filename(self.inputs.trackfile)
+        # Saving the FA matrix
         np.savetxt(base + '_FA_matrix.txt', FA_matrix, delimiter='\t')
         return runtime
 
@@ -246,7 +251,8 @@ def main():
     options, arguments = p.parse_args()
     base_directory = options.base_directory
     out_directory = options.out_directory
-    subject_list = options.subject_list.split(',')
+    subject_list = options.subject_list
+    subject_list = [subject for subject in subject_list.split(',') if re.search('CBU', subject)]
     ROI_file = options.ROI_file
 
     def FA_connectome(subject_list, base_directory, out_directory, ROI_file):
@@ -456,7 +462,7 @@ def main():
         # Running the workflow
         fa_connectome.base_dir = os.path.abspath(out_directory)
         fa_connectome.write_graph()
-        fa_connectome.run(plugin='PBSGraph')
+        fa_connectome.run()
 
     os.chdir(out_directory)
     FA_connectome(subject_list, base_directory, out_directory, ROI_file)

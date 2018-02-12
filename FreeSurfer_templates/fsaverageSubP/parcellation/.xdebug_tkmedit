@@ -1,0 +1,9 @@
+tkmedit started: Tue Sep 30 16:01:11 2014
+
+	/usr/local/freesurfer/tktools/tkmedit.bin fsaverageSubP -overlay 
+
+$Id: tkmedit.c,v 1.343 2011/03/01 01:41:22 nicks Exp $ $Name: stable5 $
+Set user home dir to /home/rr480/FSFiles/fsaverageSubP/parcellation
+ERROR: Parsing subject and image name
+   Image name not declared
+Fatal error in parsing command line args.

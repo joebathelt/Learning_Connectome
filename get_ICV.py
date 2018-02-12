@@ -10,9 +10,11 @@ def main():
 
     p.add_option('--base_directory', '-b')
     p.add_option('--subject_list', '-s')
+    p.add_option('--out_directory', '-o')
 
     options, arguments = p.parse_args()
     base_directory = options.base_directory
+    out_directory = options.out_directory
     subject_list = options.subject_list
     subject_list = [subject for subject in subject_list.split(
         ',') if re.search('CBU', subject)]
@@ -39,7 +41,7 @@ def main():
 
         # Getting the relevant diffusion-weighted data
         templates = dict(
-            in_file='/imaging/jb07/CALM/CALM_BIDS/{subject_id}/anat/{subject_id}_T1w.nii.gz')
+            in_file='{subject_id}/anat/{subject_id}_T1w.nii.gz')
 
         selectfiles = pe.Node(SelectFiles(templates),
                               name="selectfiles")
@@ -69,15 +71,15 @@ def main():
 
         # Create an output csv file
         addrow = pe.Node(interface=misc.AddCSVRow(), name='addrow')
-        addrow.inputs.in_file = base_directory + 'volume_results.csv'
+        addrow.inputs.in_file = out_directory + 'volume_results.csv'
 
         #====================================
         # Setting up the workflow
         get_ICV = pe.Workflow(name='get_ICV')
         get_ICV.connect(infosource, 'subject_id', selectfiles, 'subject_id')
-        #get_ICV.connect(selectfiles, 'in_file', flt, 'in_file')
-        #get_ICV.connect(flt, 'out_matrix_file', mat2det, 'in_matrix')
-        #get_ICV.connect(infosource, 'subject_id', mat2det, 'subject_id')
+        get_ICV.connect(selectfiles, 'in_file', flt, 'in_file')
+        get_ICV.connect(flt, 'out_matrix_file', mat2det, 'in_matrix')
+        get_ICV.connect(infosource, 'subject_id', mat2det, 'subject_id')
         get_ICV.connect(infosource, 'subject_id', fast, 'out_basename')
         get_ICV.connect(selectfiles, 'in_file', fast, 'in_files')
         get_ICV.connect(fast, 'partial_volume_files', GM_select, 'inlist')
@@ -90,9 +92,9 @@ def main():
 
         #====================================
         # Running the workflow
-        get_ICV.base_dir = os.path.abspath(base_directory)
+        get_ICV.base_dir = os.path.abspath(out_directory)
         get_ICV.write_graph()
-        get_ICV.run(plugin='PBSGraph')
+        get_ICV.run()
 
     get_ICV(subject_list, base_directory)
 
